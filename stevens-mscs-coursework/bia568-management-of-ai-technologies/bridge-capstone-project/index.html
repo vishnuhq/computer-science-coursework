@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridge | Offline-First Adaptive Learning Tablet</title>
+    <style>
+        :root {
+            --primary: #6a5acd; /* SlateBlue - changed from blue */
+            --secondary: #9370db; /* MediumPurple - changed from green */
+            --accent: #b19cd9; /* Light purple */
+            --dark: #202124;
+            --light: #f8f9fa;
+            --gray: #5f6368;
+            --gradient-primary: linear-gradient(135deg, #6a5acd, #9370db);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: var(--dark);
+            line-height: 1.6;
+            background-color: #f9f8ff; /* Very light purple background */
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-color: white;
+            box-shadow: 0 2px 15px rgba(106, 90, 205, 0.15);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 1px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: var(--gradient-primary);
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+        
+        .hero {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 150px 0 100px;
+            text-align: center;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hero p {
+            font-size: 20px;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: white;
+            color: var(--primary);
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            background: var(--light);
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a4cbe; /* Darker shade of primary */
+            color: white;
+        }
+        
+        section {
+            padding: 80px 0;
+        }
+        
+        section:nth-child(even) {
+            background-color: #f0ebff; /* Light purple background */
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 36px;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background: var(--gradient-primary);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .section-title p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .section-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .problem-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .problem-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(106, 90, 205, 0.15);
+        }
+        
+        .problem-card::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-primary);
+            top: 0;
+            left: 0;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+        
+        .problem-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .problem-card h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+        
+        .feature-img {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(106, 90, 205, 0.2);
+        }
+        
+        .feature-list li {
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .feature-icon {
+            margin-right: 15px;
+            min-width: 25px;
+            color: var(--secondary);
+            font-size: 20px;
+        }
+        
+        .feature-content h3 {
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .team-member {
+            text-align: center;
+            background: white;
+            border-radius: 15px;
+            padding: 30px 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .team-member:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(106, 90, 205, 0.15);
+        }
+        
+        .team-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            border: 5px solid #f0ebff;
+            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.2);
+        }
+        
+        .team-member h3 {
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .team-member .role {
+            color: var(--secondary);
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .team-member p {
+            color: var(--gray);
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .tech-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.1);
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+        }
+        
+        .tech-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(106, 90, 205, 0.15);
+        }
+        
+        .tech-icon {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .tech-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .market-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+        
+        .market-content h3 {
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .market-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.1);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card h4 {
+            font-size: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+        
+        .roadmap {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+        
+        .roadmap::before {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+            border-radius: 4px;
+        }
+        
+        .roadmap-item {
+            padding: 20px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+            box-sizing: border-box;
+        }
+        
+        .roadmap-item:nth-child(odd) {
+            left: 0;
+        }
+        
+        .roadmap-item:nth-child(even) {
+            left: 50%;
+        }
+        
+        .roadmap-content {
+            padding: 25px 30px;
+            background-color: white;
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .roadmap-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(106, 90, 205, 0.15);
+        }
+        
+        .roadmap-content h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .roadmap-content .timeline {
+            color: var(--secondary);
+            font-weight: 500;
+            margin-bottom: 15px;
+            display: inline-block;
+            padding: 4px 10px;
+            background: #f0ebff;
+            border-radius: 5px;
+        }
+        
+        .roadmap-item:nth-child(odd) .roadmap-content::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: white;
+            top: 25px;
+            transform: rotate(45deg);
+            box-shadow: 5px -5px 5px rgba(0,0,0,0.05);
+        }
+        
+        .roadmap-item:nth-child(even) .roadmap-content::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: -10px;
+            background-color: white;
+            top: 25px;
+            transform: rotate(45deg);
+            box-shadow: -5px 5px 5px rgba(0,0,0,0.05);
+        }
+        
+        .roadmap-item::before {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background-color: white;
+            border: 4px solid var(--primary);
+            top: 25px;
+            border-radius: 50%;
+            z-index: 1;
+            box-shadow: 0 0 0 5px rgba(106, 90, 205, 0.2);
+        }
+        
+        .roadmap-item:nth-child(odd)::before {
+            right: -17px;
+        }
+        
+        .roadmap-item:nth-child(even)::before {
+            left: -17px;
+        }
+        
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .impact-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.1);
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        
+        .impact-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(106, 90, 205, 0.15);
+        }
+        
+        .impact-icon {
+            font-size: 48px;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .impact-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .cta {
+            text-align: center;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 100px 0;
+            clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 100%);
+        }
+        
+        .cta h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cta p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 50px 0;
+            text-align: center;
+        }
+        
+        .contact-info {
+            margin-bottom: 30px;
+        }
+        
+        .contact-info p {
+            margin-bottom: 10px;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+        }
+        
+        .social-links li {
+            margin: 0 10px;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 24px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 30px 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        tbody tr:hover {
+            background-color: rgba(106, 90, 205, 0.05);
+        }
+        
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(106, 90, 205, 0.15);
+        }
+        
+        .feature-card h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-card h4 span {
+            width: 30px;
+            height: 30px;
+            background: var(--gradient-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        .sdg-badge {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.1);
+            text-align: center;
+        }
+        
+        .metric-card .number {
+            font-size: 40px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+        
+        .metric-card .label {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            margin-bottom: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.1);
+        }
+        
+        .faq-question {
+            padding: 15px 20px;
+            background: white;
+            color: var(--primary);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            background: white;
+            transition: max-height 0.3s, padding 0.3s;
+        }
+        
+        .faq-item.active .faq-answer {
+            padding: 15px 20px;
+            max-height: 500px;
+        }
+        
+        .challenges-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .challenge-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.1);
+            padding: 25px;
+            height: 100%;
+        }
+        
+        .challenge-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .challenge-card h3 i {
+            margin-right: 10px;
+            background: var(--gradient-primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 14px;
+        }
+        
+        .challenge-card ul {
+            padding-left: 20px;
+        }
+        
+        .challenge-card ul li {
+            margin-bottom: 10px;
+        }
+        
+        .challenge-card .solution {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .challenge-card .solution h4 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">BRIDGE</div>
+                <ul class="nav-links">
+                    <li><a href="#problem">Problem</a></li>
+                    <li><a href="#solution">Solution</a></li>
+                    <li><a href="#team">Team</a></li>
+                    <li><a href="#technology">Technology</a></li>
+                    <li><a href="#market">Market</a></li>
+                    <li><a href="#implementation">Implementation</a></li>
+                    <li><a href="#impact">Impact</a></li>
+                    <li><a href="#challenges">Challenges</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="sdg-badge">SDG 4: Quality Education</div>
+            <h1>Bridge the Educational Divide</h1>
+            <p>An offline-first adaptive learning tablet bringing quality education to the world's most challenging environments, powered by sophisticated AI technology</p>
+            <div class="feature-img">
+                    <img src="demo.png" alt="demo" width="100%">
+            </div>
+        </div>
+    </section>
+
+    <section id="problem">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-badge">SDG 4 Challenge</div>
+                <h2>The Global Education Crisis</h2>
+                <p>Despite global progress in education, millions of children remain excluded from quality learning opportunities due to infrastructure limitations and resource constraints.</p>
+            </div>
+            
+            <div class="metric-row">
+                <div class="metric-card">
+                    <div class="number">260M</div>
+                    <div class="label">Children out of school globally</div>
+                </div>
+                <div class="metric-card">
+                    <div class="number">2.9B</div>
+                    <div class="label">People without internet access</div>
+                </div>
+                <div class="metric-card">
+                    <div class="number">759M</div>
+                    <div class="label">People without reliable electricity</div>
+                </div>
+                <div class="metric-card">
+                    <div class="number">70%</div>
+                    <div class="label">Children in low-income countries experiencing learning poverty</div>
+                </div>
+            </div>
+            
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h3>Access Gap</h3>
+                    <p>260 million children remain out of school globally, with the highest concentrations in Sub-Saharan Africa (32% of primary-age children) and Southern Asia (19%). These children face insurmountable barriers to quality education.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>Digital Divide</h3>
+                    <p>2.9 billion people remain offline globally, with rural connectivity gaps exceeding 63% in least developed countries. This digital divide prevents access to modern educational resources and technology-enabled learning.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>Infrastructure Limitations</h3>
+                    <p>759 million people worldwide lack reliable electricity access, making conventional educational technology unusable. Traditional EdTech solutions fail without basic infrastructure, creating barriers to digital learning.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>Learning Poverty</h3>
+                    <p>70% of children in low- and middle-income countries cannot read and understand a simple text by age 10. The World Bank estimates a potential loss of $10 trillion in lifetime earnings for the current generation of students.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="solution">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-badge">Our Innovation</div>
+                <h2>Bridge: A Paradigm Shift in Educational Technology</h2>
+                <p>Bridge combines rugged hardware, solar power and offline AI to deliver personalized education without requiring reliable infrastructure or internet connectivity.</p>
+            </div>
+            
+            <div class="features">
+                <div class="feature-img">
+                    <img src="bridgetablet.png" alt="Bridge Tablet Features" width="100%">
+                </div>
+                
+                <div class="feature-list">
+                    <ul>
+                        <li>
+                            <span class="feature-icon">✓</span>
+                            <div class="feature-content">
+                                <h3>Rugged, Environmentally Resilient Design</h3>
+                                <p>Military-grade specifications (MIL-STD-810H, IP67) that withstand harsh environmental conditions including extreme temperatures (-20°C to 55°C), dust, moisture, and physical impacts. Field-tested to operate in the most challenging environments.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-icon">✓</span>
+                            <div class="feature-content">
+                                <h3>Solar-Powered Technology</h3>
+                                <p>Integrated high-efficiency (24% conversion) photovoltaic cells covering 30% of the back surface area provide 5W charging capability in direct sunlight. The 10,000mAh battery enables 3-5 days of operation on a single charge.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-icon">✓</span>
+                            <div class="feature-content">
+                                <h3>Offline-First Architecture</h3>
+                                <p>Complete functionality without internet connectivity through an event-sourced data architecture and advanced compression algorithms. Pre-loaded with comprehensive educational content covering core subjects and supplementary skills.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-icon">✓</span>
+                            <div class="feature-content">
+                                <h3>AI-Powered Adaptive Learning</h3>
+                                <p>Sophisticated machine learning algorithms create personalized learning pathways based on each student's progress, strengths, and weaknesses. Uses Bayesian Knowledge Tracing, reinforcement learning, and optimized on-device ML models.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-icon">✓</span>
+                            <div class="feature-content">
+                                <h3>Multi-Language Support</h3>
+                                <p>Support for 25+ languages and dialects with compact NLP models enabling speech recognition, text-to-speech, and grammar feedback. Content is culturally relevant and aligned with local educational standards.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="margin-top: 60px;">
+                <h3 style="color: var(--primary); margin-bottom: 30px; text-align: center;">Value Innovation Canvas</h3>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Value Driver</th>
+                                <th>Eliminate</th>
+                                <th>Reduce</th>
+                                <th>Raise</th>
+                                <th>Create</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Performance</td>
+                                <td>Dependency on continuous power supply</td>
+                                <td>UI complexity for first-time technology users</td>
+                                <td>Durability standards with military-grade protection</td>
+                                <td>AI-driven adaptive learning system functioning entirely offline</td>
+                            </tr>
+                            <tr>
+                                <td>Accessibility</td>
+                                <td>Internet dependency for core functionality</td>
+                                <td>Language barriers through 25+ language support</td>
+                                <td>Built-in accessibility features for diverse learning abilities</td>
+                                <td>Community content-sharing ecosystem without connectivity</td>
+                            </tr>
+                            <tr>
+                                <td>Content Relevance</td>
+                                <td>Generic educational content not aligned with local curricula</td>
+                                <td>Curriculum gaps through comprehensive pre-loading</td>
+                                <td>Content quality through educational partnerships</td>
+                                <td>AI-powered curriculum mapping tool for national standards</td>
+                            </tr>
+                            <tr>
+                                <td>Adaptability</td>
+                                <td>One-size-fits-all learning approaches</td>
+                                <td>Teacher workload in creating personalized paths</td>
+                                <td>Learning effectiveness through real-time monitoring</td>
+                                <td>Self-evolving algorithm adapting to student performance</td>
+                            </tr>
+                            <tr>
+                                <td>Total Cost</td>
+                                <td>Recurring connectivity costs</td>
+                                <td>Maintenance expenses through self-diagnostics</td>
+                                <td>Value through comprehensive pre-loaded content</td>
+                                <td>Innovative financing models including pay-as-you-go</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-badge">About Us</div>
+                <h2>Our Team</h2>
+                <p>A multidisciplinary team with expertise in educational technology, AI, hardware development, and international education dedicated to bridging the educational divide.</p>
+            </div>
+            
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="team-photo">
+                        <img src="blessing.png" alt="Blessing Akpan-Williams" width="100%">
+                    </div>
+                    <h3>Blessing Akpan-Williams</h3>
+                    <div class="role">Project Manager & Business Development</div>
+                    <p>Background in international education initiatives and educational technology deployment in underserved regions with experience managing complex multi-stakeholder projects.</p>
+                </div>
+                <div class="team-member">
+                    <div class="team-photo">
+                        <img src="Deepti.png" alt="Deepti Chayapathi" width="100%">
+                    </div>
+                    <h3>Deepti Chayapathi</h3>
+                    <div class="role">Educational Content & Curriculum Alignment</div>
+                    <p>Expertise in designing educational materials for diverse cultural contexts and adapting curriculum to national standards across multiple regions and languages.</p>
+                </div>
+                <div class="team-member">
+                    <div class="team-photo">
+                        <img src="priyanka.png" alt="Priyanka Kavali Subramanyam" width="100%">
+                    </div>
+                    <h3>Priyanka Kavali Subramanyam</h3>
+                    <div class="role">UX Design & User Research</div>
+                    <p>Specializes in creating intuitive interfaces for non-technical users and educational product design for developing regions, with emphasis on accessibility and usability.</p>
+                </div>
+                <div class="team-member">
+                    <div class="team-photo">
+                        <img src="Vishnu.png" alt="Vishnu Vardhan Putta" width="100%">
+                    </div>
+                    <h3>Vishnu Vardhan Putta</h3>
+                    <div class="role">AI & Machine Learning Engineering</div>
+                    <p>Expertise in optimizing ML models for edge devices and developing personalized learning algorithms that function in resource-constrained environments with limited data.</p>
+                </div>
+                <div class="team-member">
+                    <div class="team-photo">
+                        <img src="Achutha.png" alt="Achutha Venkatapati Raju Rayapati" width="100%">
+                    </div>
+                    <h3>Achutha Venkatapati Raju Rayapati</h3>
+                    <div class="role">Hardware Development & Manufacturing</div>
+                    <p>Specialist in ruggedized electronics, solar integration, and sustainable supply chain management with experience developing technology for challenging environments.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="technology">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-badge">Technology</div>
+                <h2>Our Technology</h2>
+                <p>Bridge leverages cutting-edge technology optimized for operation in resource-constrained environments, combining hardware innovation with sophisticated AI systems.</p>
+            </div>
+            
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">🔧</div>
+                    <h3>Hardware Design</h3>
+                    <p>Military-grade specifications (MIL-STD-810H, IP67), integrated high-efficiency solar panels, 10,000mAh battery, energy-efficient ARM Cortex-A76 processors, 4GB RAM, 64GB storage, and field-replaceable components for extended lifecycle maintenance.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🧠</div>
+                    <h3>AI-Powered Learning</h3>
+                    <p>Offline adaptive learning engine using Bayesian Knowledge Tracing to model student knowledge states, reinforcement learning for content optimization, compact NLP models for 25+ languages, and computer vision for interactive experiences, all optimized for on-device inference.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">📊</div>
+                    <h3>Offline Analytics</h3>
+                    <p>On-device analytics providing detailed progress tracking, early identification of learning gaps, engagement analysis, learning pattern recognition, and progress visualization without requiring internet connectivity or cloud processing.</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 60px;">
+                <h3 style="color: var(--primary); margin-bottom: 30px; text-align: center;">Offline-First Architecture</h3>
+                
+                <div class="feature-card">
+                    <h4><span>1</span>Event-Sourced Data Structure</h4>
+                    <p>Logs all interactions locally and enables complete functionality without internet connectivity. Provides intelligent selective synchronization when connectivity becomes available with conflict resolution and prioritized synchronization mechanisms.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4><span>2</span>Content Compression & Management</h4>
+                    <p>Advanced compression algorithms maximize educational resources available offline, utilizing H.265/HEVC video compression, WebP and AVIF image formats, intelligent content pre-fetching, and differential updates to optimize storage utilization.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4><span>3</span>Edge AI Framework</h4>
+                    <p>TensorFlow Lite and optimized on-device ML models operate entirely on-device without cloud connectivity. Uses model quantization to reduce size by up to 75%, leverages batch computation during idle periods, and incorporates continuous learning capabilities.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4><span>4</span>Peer-to-Peer Distribution</h4>
+                    <p>Enables tablet-to-tablet content sharing and updates without internet connectivity. Teachers can share locally relevant materials, updates can propagate through mesh networks, and community-created content can be distributed across devices.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="market">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-badge">Market Analysis</div>
+                <h2>Market & Competition</h2>
+                <p>Bridge addresses a significant unmet need in educational technology for underserved communities, targeting a substantial and growing market opportunity.</p>
+            </div>
+            
+            <div class="market-container">
+                <div class="market-content">
+                    <h3>Target Users</h3>
+                    <ul>
+                        <li><strong>Students in Resource-Constrained Environments:</strong> School-aged children (6-17) in remote areas with limited infrastructure, intermittent school attendance, and significant educational barriers.</li>
+                        <li><strong>Teachers and School Administrators:</strong> Educators working with limited resources seeking affordable technology solutions that enhance rather than replace their teaching capabilities.</li>
+                        <li><strong>Government Education Departments:</strong> Ministries seeking cost-effective solutions focused on educational equity and addressing SDG 4 targets in challenging regions.</li>
+                        <li><strong>NGOs and International Organizations:</strong> Development agencies focused on educational access and quality in the world's most underserved areas.</li>
+                    </ul>
+                    
+                    <div class="market-stats">
+                        <div class="stat-card">
+                            <h4>1.2B</h4>
+                            <p>Potential Addressable Market (Students)</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>$50.4B</h4>
+                            <p>Total Addressable Market</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>$27.3B</h4>
+                            <p>Serviceable Available Market</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>$75.9M</h4>
+                            <p>5-Year Revenue Target</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature-img">
+                    <img src="marketsizingmodel.png" alt="Market Sizing Model" width="100%">
+                </div>
+            </div>
+            
+            <div style="margin-top: 80px;">
+                <h3 style="margin-bottom: 30px; text-align: center; color: var(--primary);">Competitive Advantage</h3>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Bridge</th>
+                                <th>OLPC</th>
+                                <th>Endless OS</th>
+                                <th>Kolibri</th>
+                                <th>eSchool 360</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Solution Type</td>
+                                <td>Integrated hardware-software</td>
+                                <td>Hardware with basic software</td>
+                                <td>Software only</td>
+                                <td>Software only</td>
+                                <td>Basic tablet solution</td>
+                            </tr>
+                            <tr>
+                                <td>AI Personalization</td>
+                                <td>Advanced offline adaptive learning</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td>Basic recommendations</td>
+                                <td>None</td>
+                            </tr>
+                            <tr>
+                                <td>Power Solution</td>
+                                <td>Integrated solar with 3-5 day battery</td>
+                                <td>Basic power saving</td>
+                                <td>Depends on host device</td>
+                                <td>Depends on host device</td>
+                                <td>Basic solar charging</td>
+                            </tr>
+                            <tr>
+                                <td>Durability</td>
+                                <td>Military-grade (IP67)</td>
+                                <td>Child-friendly design</td>
+                                <td>Depends on host device</td>
+                                <td>Depends on host device</td>
+                                <td>Basic durability</td>
+                            </tr>
+                            <tr>
+                                <td>Teacher Tools</td>
+                                <td>Comprehensive analytics dashboard</td>
+                                <td>Minimal</td>
+                                <td>Basic usage statistics</td>
+                                <td>Moderate analytics</td>
+                                <td>Basic progress tracking</td>
+                            </tr>
+                            <tr>
+                                <td>Languages</td>
+                                <td>25+ with AI adaptation</td>
+                                <td>Limited</td>
+                                <td>Moderate multi-language</td>
+                                <td>Good content translation</td>
+                                <td>Limited to regional</td>
+                            </tr>
+                            <tr>
+                                <td>3-Year TCO</td>
+                                <td>$100-120 + minimal ongoing</td>
+                                <td>Higher with replacements</td>
+                                <td>Hardware cost + moderate support</td>
+                                <td>Hardware cost + moderate support</td>
+                                <td>Moderate + maintenance</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 50px;">
+                    <h3 style="margin-bottom: 20px; color: var(--primary);">Key Competitive Advantages</h3>
+                    <div class="feature-card">
+                        <h4><span>1</span>Integrated Hardware-Software Solution</h4>
+                        <p>Purpose-built complete solution versus software-only or generic hardware approaches, optimized specifically for educational delivery in challenging environments.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4><span>2</span>Advanced AI Personalization</h4>
+                        <p>Sophisticated machine learning in offline environments enabling truly personalized learning without cloud connectivity requirements.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4><span>3</span>Total Cost of Ownership</h4>
+                        <p>Extended lifespan (5+ years) and eliminated recurring costs through solar power and durable design, significantly reducing the long-term investment required.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="implementation">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-badge">Roadmap</div>
+                <h2>Implementation Roadmap</h2>
+                <p>Our phased approach ensures careful validation and refinement before scaling, addressing both technical and operational challenges systematically.</p>
+            </div>
+            
+            <div class="feature-img" style="margin-bottom: 50px;">
+                <img src="implementatonPhases.png" alt="Implementation Phases" width="100%">
+            </div>
+            
+            <div class="roadmap">
+                <div class="roadmap-item">
+                    <div class="roadmap-content">
+                        <h3>Phase 1: Foundation Building</h3>
+                        <div class="timeline">Months 1-6</div>
+                        <p>Hardware finalization and prototyping, core software development, initial content creation for 5 languages, pilot site selection across diverse environments, partnership development with educational authorities, and teacher training curriculum development.</p>
+                        <div style="margin-top: 15px;">
+                            <strong>Key Milestones:</strong>
+                            <ul style="padding-left: 20px; margin-top: 5px;">
+                                <li>Functional prototype tablets (Month 3)</li>
+                                <li>First teacher training workshop (Month 5)</li>
+                                <li>Pilot implementation agreements with 5 schools (Month 6)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-content">
+                        <h3>Phase 2: Pilot Implementation</h3>
+                        <div class="timeline">Months 7-12</div>
+                        <p>Manufacturing setup for pilot quantities (500 units), deployment across 5 schools in 2 countries, technical refinement based on real-world usage data, teacher training for 25 educators, and establishment of initial support systems and impact measurement.</p>
+                        <div style="margin-top: 15px;">
+                            <strong>Key Milestones:</strong>
+                            <ul style="padding-left: 20px; margin-top: 5px;">
+                                <li>500 tablets deployed across 5 schools (Month 9)</li>
+                                <li>First quarterly impact assessment (Month 12)</li>
+                                <li>Implementation Playbook v2 published (Month 12)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-content">
+                        <h3>Phase 3: Validated Scaling</h3>
+                        <div class="timeline">Months 13-24</div>
+                        <p>Hardware revision for production optimization, manufacturing scale-up to 10,000+ units monthly, expansion to 100+ schools across 5 countries, language addition to 15 languages, establishing 3 regional support centers, and implementation partner certification program.</p>
+                        <div style="margin-top: 15px;">
+                            <strong>Key Milestones:</strong>
+                            <ul style="padding-left: 20px; margin-top: 5px;">
+                                <li>10,000 tablets deployed across 100+ schools (Month 18)</li>
+                                <li>Comprehensive impact assessment showing measurable gains (Month 24)</li>
+                                <li>Self-sustaining regional support hubs in 3 regions (Month 24)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-content">
+                        <h3>Phase 4: Sustainable Growth</h3>
+                        <div class="timeline">Months 25-36</div>
+                        <p>Hardware cost optimization and connectivity enhancement, expansion to 1,000+ schools and 250,000+ students across 15 countries, localization expansion to 25+ languages, local manufacturing exploration, and transition to financial sustainability.</p>
+                        <div style="margin-top: 15px;">
+                            <strong>Key Milestones:</strong>
+                            <ul style="padding-left: 20px; margin-top: 5px;">
+                                <li>250,000+ students actively using Bridge tablets (Month 36)</li>
+                                <li>Comprehensive longitudinal impact study (Month 36)</li>
+                                <li>Sustainable financial model with diversified revenue (Month 36)</li>
+                                <li>Implementation capacity for 1M+ students by Year 5 (Month 36)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 80px;">
+                <h3 style="margin-bottom: 30px; text-align: center; color: var(--primary);">Financial Projections</h3>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Units</th>
+                                <th>Annual Revenue</th>
+                                <th>Annual Growth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>89,250</td>
+                                <td>$7.6M</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>178,500</td>
+                                <td>$15.2M</td>
+                                <td>100%</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>297,500</td>
+                                <td>$25.3M</td>
+                                <td>67%</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>446,250</td>
+                                <td>$37.9M</td>
+                                <td>50%</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>892,500</td>
+                                <td>$75.9M</td>
+                                <td>100%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 40px;">
+                    <h4 style="color: var(--primary); margin-bottom: 15px;">Revenue Streams</h4>
+                    <ul>
+                        <li><strong>Hardware Sales (80%):</strong> $85-120 per unit based on volume and specifications</li>
+                        <li><strong>Software & Content Subscriptions (10%):</strong> $5-15 per student per year</li>
+                        <li><strong>Implementation Services (7%):</strong> Training, deployment support, technical assistance</li>
+                        <li><strong>Maintenance & Support (3%):</strong> Extended support packages and technical assistance</li>
+                    </ul>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h4 style="color: var(--primary); margin-bottom: 15px;">Investment Strategy</h4>
+                    <ul>
+                        <li><strong>Seed Capital (Pre-Year 1):</strong> $15M for prototype development and initial pilots</li>
+                        <li><strong>Series A (Year 1):</strong> $20M for initial production and first deployments</li>
+                        <li><strong>Series B (Year 3):</strong> $10M to accelerate market expansion</li>
+                        <li><strong>Series C (Year 4):</strong> $30M for global scaling</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="impact">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-badge">SDG Impact</div>
+                <h2>Social Impact & SDG Contribution</h2>
+                <p>Bridge directly contributes to SDG 4 (Quality Education) while supporting multiple other development goals through its comprehensive approach.</p>
+            </div>
+            
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <div class="impact-icon">📚</div>
+                    <h3>Educational Equity</h3>
+                    <p>Provides personalized learning for students previously excluded from quality education, bringing sophisticated educational technology to communities where conventional approaches have failed.</p>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-icon">👨‍🏫</div>
+                    <h3>Teacher Empowerment</h3>
+                    <p>Enhances educator effectiveness in resource-constrained environments through actionable insights, reduced administrative burden, and community knowledge sharing.</p>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-icon">💰</div>
+                    <h3>Economic Opportunity</h3>
+                    <p>Improves educational outcomes leading to enhanced economic prospects and develops transferable digital literacy skills for broader technological participation.</p>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-icon">⚖️</div>
+                    <h3>Gender Equality</h3>
+                    <p>Helps overcome gender-specific educational barriers by enabling learning at home or in community settings where girls' attendance may be limited by cultural or safety concerns.</p>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-icon">🔄</div>
+                    <h3>Sustainability</h3>
+                    <p>Extends device lifecycle reducing electronic waste through modular design and field-replaceable components while utilizing renewable solar power to minimize environmental impact.</p>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-icon">🌍</div>
+                    <h3>Community Resilience</h3>
+                    <p>Enables educational continuity during disruptions including natural disasters, conflicts, health emergencies, and seasonal barriers that traditionally interrupt learning.</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 50px;">
+                <h3 style="margin-bottom: 30px; text-align: center; color: var(--primary);">Evaluation Metrics</h3>
+                
+                <div class="feature-img">
+                    <img src="impact.png" alt="Impact Evaluation Metrics" width="100%">
+                </div>
+                
+                <div style="margin-top: 40px;">
+                    <h4 style="color: var(--primary); margin-bottom: 15px;">Educational Outcomes</h4>
+                    <ul>
+                        <li><strong>20% increase in literacy proficiency</strong> after 6 months (measured via standardized assessments)</li>
+                        <li><strong>15% increase in mathematics proficiency</strong> after 6 months</li>
+                        <li><strong>&lt;10% knowledge decline</strong> during school interruptions (vs. 30-40% typically observed)</li>
+                        <li><strong>70% of school closure days</strong> show active tablet usage, maintaining educational continuity</li>
+                        <li><strong>15% better outcomes</strong> for adaptive content users vs. fixed content, demonstrating personalization effectiveness</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="challenges" class="bg-light">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-badge">Risk Management</div>
+                <h2>Challenges & Risk Mitigation</h2>
+                <p>We've identified and developed comprehensive strategies to address potential challenges across technical, operational, and market dimensions.</p>
+            </div>
+            
+            <div class="challenges-container">
+                <div class="challenge-card">
+                    <h3><i>T</i>Technical Challenges</h3>
+                    <ul>
+                        <li><strong>Hardware Durability in Extreme Conditions</strong></li>
+                        <li><strong>Battery Degradation and Power Limitations</strong></li>
+                        <li><strong>AI Personalization with Limited Data</strong></li>
+                        <li><strong>Content Updates Without Connectivity</strong></li>
+                    </ul>
+                    <div class="solution">
+                        <h4>Our Mitigation Approach:</h4>
+                        <p>Extreme environment testing, modular design with field-replaceable components, battery optimization for 80% capacity retention after 1,000 charge cycles, pre-training AI with synthetic data, and implementing peer-to-peer content distribution networks.</p>
+                    </div>
+                </div>
+                
+                <div class="challenge-card">
+                    <h3><i>O</i>Operational Challenges</h3>
+                    <ul>
+                        <li><strong>Supply Chain Resilience</strong></li>
+                        <li><strong>Maintenance in Remote Areas</strong></li>
+                        <li><strong>Teacher Adoption and Digital Literacy</strong></li>
+                        <li><strong>Impact Measurement at Scale</strong></li>
+                    </ul>
+                    <div class="solution">
+                        <h4>Our Mitigation Approach:</h4>
+                        <p>Component diversification with multiple manufacturing partners, training local technical champions, implementing tiered progressive onboarding for teachers, and developing automated assessment tools with standardized baselines.</p>
+                    </div>
+                </div>
+                
+                <div class="challenge-card">
+                    <h3><i>F</i>Financial Challenges</h3>
+                    <ul>
+                        <li><strong>Funding Sustainability</strong></li>
+                        <li><strong>Competitive Response</strong></li>
+                        <li><strong>Technological Obsolescence</strong></li>
+                        <li><strong>Procurement Policy Constraints</strong></li>
+                    </ul>
+                    <div class="solution">
+                        <h4>Our Mitigation Approach:</h4>
+                        <p>Diversified funding sources with cross-subsidization models, clear total cost of ownership articulation, modular hardware architecture with forward-compatible software, and strategic partnerships with educational authorities.</p>
+                    </div>
+                </div>
+                
+                <div class="challenge-card">
+                    <h3><i>E</i>Ethical & Social Challenges</h3>
+                    <ul>
+                        <li><strong>Data Privacy in Vulnerable Contexts</strong></li>
+                        <li><strong>Equitable Access and Distribution</strong></li>
+                        <li><strong>Cultural Relevance and Appropriateness</strong></li>
+                        <li><strong>Technology Dependency Concerns</strong></li>
+                    </ul>
+                    <div class="solution">
+                        <h4>Our Mitigation Approach:</h4>
+                        <p>Privacy-by-design principles with on-device data storage, equity-focused distribution criteria, co-creation with local educators, and designing Bridge as a complement to rather than replacement for traditional education.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <h2>Join Us in Bridging the Educational Divide</h2>
+            <p>We invite partnerships with educational authorities, content providers, implementation organizations, and funding partners to help drive educational equity through innovative technology.</p>
+            <div>
+                <a href="#contact" class="btn">Contact Us</a>
+                <a href="#implementation" class="btn" style="margin-left: 15px;">View Roadmap</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-badge">Get Involved</div>
+                <h2>Contact Us</h2>
+                <p>Ready to transform education in challenging environments? Reach out to explore partnership opportunities.</p>
+            </div>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">How can educational institutions partner with Bridge?</div>
+                    <div class="faq-answer">
+                        <p>Educational institutions can partner with Bridge as pilot implementation sites, curriculum collaborators, or regional hubs for teacher training and support. We work closely with schools to adapt our solution to their specific needs and context, while providing comprehensive training and ongoing support.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">What funding opportunities are available for Bridge deployment?</div>
+                    <div class="faq-answer">
+                        <p>Bridge offers multiple funding models including direct purchase, pay-as-you-go arrangements, results-based financing, and hybrid approaches combining philanthropy with sustainable revenue streams. We also work with international donors, corporate CSR programs, and government education budgets to create tailored financing solutions.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How can content providers contribute to Bridge?</div>
+                    <div class="faq-answer">
+                        <p>Content providers can partner with Bridge to integrate their educational materials into our platform, adapting content for offline use and localization. We're particularly interested in collaborations that enhance our curriculum offerings, provide culturally relevant materials, and expand our language support.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Where will Bridge be first deployed?</div>
+                    <div class="faq-answer">
+                        <p>Our initial deployment focuses on regions with significant educational challenges but stable implementation environments, including parts of Sub-Saharan Africa and South Asia. We're currently selecting pilot sites based on a combination of need, local support, and diversity of implementation conditions to validate our solution across contexts.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-info" style="text-align: center; margin-top: 60px;">
+                <p><strong>Email:</strong> bridge@BIA568.org</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p style="margin-bottom: 20px;">Bridge | An Offline-First Adaptive Learning Tablet</p>
+            <p style="margin-bottom: 30px;">Supporting SDG 4: Quality Education</p>
+            <p>© 2025 Bridge. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple script to toggle FAQ items
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', () => {
+                    const faqItem = question.parentElement;
+                    faqItem.classList.toggle('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

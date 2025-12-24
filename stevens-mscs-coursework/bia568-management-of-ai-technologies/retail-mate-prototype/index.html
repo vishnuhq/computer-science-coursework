@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RetailMate - FashionForward</title>
+  <style>
+    :root {
+      --primary: #6a359c;
+      --primary-dark: #5a2a8a;
+      --primary-light: #f0ebf7;
+      --accent: #ff6b6b;
+      --text-dark: #2c2c2c;
+      --text-light: #ffffff;
+      --text-gray: #767676;
+      --bg-light: #f9f9f9;
+      --border: #e0e0e0;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+    }
+    
+    body {
+      background-color: #f5f5f5;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 15px;
+    }
+    
+    .chat-container {
+      width: 100%;
+      max-width: 400px;
+      height: 600px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      background-color: white;
+    }
+    
+    .chat-header {
+      background-color: var(--primary);
+      color: var(--text-light);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    
+    .logo {
+      width: 40px;
+      height: 40px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 16px;
+    }
+    
+    .header-text h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    
+    .header-text p {
+      margin: 2px 0 0 0;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    
+    .chat-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background-color: var(--bg-light);
+      display: flex;
+      flex-direction: column;
+      scroll-behavior: smooth;
+    }
+    
+    .message {
+      margin-bottom: 15px;
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      line-height: 1.4;
+      font-size: 14px;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .bot-message {
+      align-self: flex-start;
+      background-color: white;
+      color: var(--text-dark);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    .user-message {
+      align-self: flex-end;
+      background-color: var(--primary);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    
+    .price {
+      font-weight: 600;
+      color: var(--accent);
+    }
+    
+    .product-name {
+      font-weight: 500;
+    }
+    
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .suggestion-chip {
+      background-color: white;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      border-radius: 18px;
+      padding: 8px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .suggestion-chip:hover {
+      background-color: var(--primary-light);
+      transform: translateY(-1px);
+    }
+    
+    .chat-footer {
+      padding: 15px;
+      background-color: white;
+      border-top: 1px solid var(--border);
+    }
+    
+    .input-group {
+      display: flex;
+      align-items: center;
+      background-color: var(--bg-light);
+      border-radius: 24px;
+      overflow: hidden;
+      padding: 0 6px 0 15px;
+      border: 1px solid var(--border);
+      transition: border 0.2s;
+    }
+    
+    .input-group:focus-within {
+      border: 1px solid var(--primary);
+    }
+    
+    .chat-input {
+      flex: 1;
+      border: none;
+      padding: 12px 0;
+      font-size: 14px;
+      background-color: transparent;
+      outline: none;
+    }
+    
+    .send-btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .send-btn:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    /* Make it responsive for mobiles */
+    @media (max-height: 700px) {
+      .chat-container {
+        height: 90vh;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .chat-container {
+        border-radius: 0;
+        height: 100vh;
+        max-width: 100%;
+      }
+      
+      body {
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="logo">RM</div>
+      <div class="header-text">
+        <h1>RetailMate</h1>
+        <p>FashionForward</p>
+      </div>
+    </div>
+    
+    <div class="chat-body" id="chatBody">
+      <div class="message bot-message">
+        Hello! I'm RetailMate, your personal FashionForward shopping assistant. How can I help you discover the perfect fashion items today?
+      </div>
+      
+      <div class="suggestions">
+        <div class="suggestion-chip">What's trending now?</div>
+        <div class="suggestion-chip">Help me find an outfit</div>
+        <div class="suggestion-chip">Gift ideas</div>
+        <div class="suggestion-chip">Current promotions</div>
+      </div>
+    </div>
+    
+    <div class="chat-footer">
+      <div class="input-group">
+        <input type="text" class="chat-input" id="userInput" placeholder="Type your message...">
+        <button class="send-btn" id="sendBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 2L11 13"></path>
+            <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chatBody = document.getElementById('chatBody');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const suggestionChips = document.querySelectorAll('.suggestion-chip');
+    
+    // Retail-specific responses
+    const responses = {
+      'trending': `Our current trending items include:<br><br>
+                  <span class="product-name">Oversized Blazer</span> in sage green <span class="price">$120</span><br>
+                  <span class="product-name">Wide-Leg Trousers</span> in cream <span class="price">$85</span><br>
+                  <span class="product-name">Statement Chain Necklace</span> <span class="price">$68</span><br><br>
+                  These pieces are perfect for creating a modern, sophisticated look. Would you like to see styling options?`,
+      
+      'outfit': `I'd be happy to help you find the perfect outfit! Could you tell me what occasion you're shopping for? Is it for:<br><br>
+                • Work/Professional<br>
+                • Casual weekend<br>
+                • Special event<br>
+                • Date night`,
+      
+      'gift': `Our most popular gift items include:<br><br>
+              <span class="product-name">Cashmere Scarf</span> <span class="price">$78</span><br>
+              <span class="product-name">Leather Card Holder</span> <span class="price">$45</span><br>
+              <span class="product-name">Statement Earrings</span> <span class="price">$52</span><br><br>
+              Do you have a specific budget or recipient in mind? I can help you find the perfect gift!`,
+      
+      'promotion': `We currently have two exciting promotions:<br><br>
+                   • 20% off all summer collection items<br>
+                   • Buy-one-get-one 50% off all accessories<br><br>
+                   Our new fall collection has just arrived as well! Would you like to see our featured items?`,
+      
+      'work': `For work attire, I recommend our:<br><br>
+              <span class="product-name">Tailored Blazer</span> <span class="price">$135</span><br>
+              <span class="product-name">Silk Blouse</span> <span class="price">$88</span><br>
+              <span class="product-name">Pencil Skirt</span> <span class="price">$75</span><br><br>
+              These pieces can be mixed and matched for multiple professional looks. Would you like to see our complete workwear collection?`,
+      
+      'casual': `For casual weekend style, these are customer favorites:<br><br>
+                <span class="product-name">Boyfriend Jeans</span> <span class="price">$95</span><br>
+                <span class="product-name">Oversized Sweater</span> <span class="price">$65</span><br>
+                <span class="product-name">White Sneakers</span> <span class="price">$110</span><br><br>
+                These can be styled together for an effortlessly chic look. Would you like to see accessory recommendations?`,
+      
+      'size': `We offer inclusive sizing across our collections:<br><br>
+              • Clothing: XS-3XL<br>
+              • Shoes: 5-13 (US sizes)<br><br>
+              Many items feature our True Fit technology to help you find your perfect size. Would you like help with sizing for a specific item?`,
+      
+      'accessory': `Our current best-selling accessories include:<br><br>
+                   <span class="product-name">Structured Tote Bag</span> <span class="price">$125</span><br>
+                   <span class="product-name">Gold Hoop Earrings</span> <span class="price">$45</span><br>
+                   <span class="product-name">Leather Belt</span> with gold buckle <span class="price">$65</span><br><br>
+                   Remember, all accessories are currently buy-one-get-one 50% off! Would you like me to suggest a complete look?`,
+      
+      'default': `I'm here to help you find the perfect fashion items! Could you tell me more about what you're looking for today? I can suggest outfits, accessories, or the latest trends.`
+    };
+    
+    // Event Listeners
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+    
+    suggestionChips.forEach(chip => {
+      chip.addEventListener('click', function() {
+        const text = this.textContent;
+        addUserMessage(text);
+        processMessage(text);
+      });
+    });
+    
+    function sendMessage() {
+      const message = userInput.value.trim();
+      if (message !== '') {
+        addUserMessage(message);
+        processMessage(message);
+        userInput.value = '';
+      }
+    }
+    
+    function addUserMessage(message) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message user-message';
+      messageDiv.textContent = message;
+      chatBody.appendChild(messageDiv);
+      chatBody.scrollTop = chatBody.scrollHeight;
+      
+      // Remove existing suggestions
+      const existingSuggestions = chatBody.querySelector('.suggestions:last-child');
+      if (existingSuggestions) {
+        existingSuggestions.remove();
+      }
+    }
+    
+    function addBotMessage(message) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message bot-message';
+      messageDiv.innerHTML = message;
+      chatBody.appendChild(messageDiv);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+    
+    function processMessage(message) {
+      // Simple keyword matching for retail context
+      setTimeout(() => {
+        const lowerMsg = message.toLowerCase();
+        
+        if (lowerMsg.includes('trend') || lowerMsg.includes('popular') || lowerMsg.includes('new')) {
+          addBotMessage(responses.trending);
+          addSuggestions(['Show me the blazer', 'Styling ideas', 'Sale items']);
+        } 
+        else if (lowerMsg.includes('outfit') || lowerMsg.includes('look') || lowerMsg.includes('wear')) {
+          addBotMessage(responses.outfit);
+          addSuggestions(['Work outfits', 'Casual weekend', 'Date night']);
+        } 
+        else if (lowerMsg.includes('work') || lowerMsg.includes('office') || lowerMsg.includes('professional')) {
+          addBotMessage(responses.work);
+          addSuggestions(['Show accessories', 'Other colors', 'Size guide']);
+        } 
+        else if (lowerMsg.includes('casual') || lowerMsg.includes('weekend')) {
+          addBotMessage(responses.casual);
+          addSuggestions(['Show accessories', 'Other colors', 'Size guide']);
+        } 
+        else if (lowerMsg.includes('gift') || lowerMsg.includes('present')) {
+          addBotMessage(responses.gift);
+          addSuggestions(['Under $50', 'Gift wrapping', 'For men']);
+        } 
+        else if (lowerMsg.includes('promo') || lowerMsg.includes('discount') || lowerMsg.includes('sale')) {
+          addBotMessage(responses.promotion);
+          addSuggestions(['Summer sale', 'Accessories', 'New arrivals']);
+        } 
+        else if (lowerMsg.includes('size') || lowerMsg.includes('fit')) {
+          addBotMessage(responses.size);
+          addSuggestions(['Size chart', 'Return policy', 'Find my size']);
+        } 
+        else if (lowerMsg.includes('accessory') || lowerMsg.includes('accessories') || lowerMsg.includes('jewelry') || lowerMsg.includes('bag')) {
+          addBotMessage(responses.accessory);
+          addSuggestions(['Show bags', 'Jewelry options', 'Complete looks']);
+        } 
+        else {
+          addBotMessage(responses.default);
+          addSuggestions(['Trending now', 'Outfit ideas', 'Accessories']);
+        }
+      }, 600);
+    }
+    
+    function addSuggestions(suggestions) {
+      const suggestionsDiv = document.createElement('div');
+      suggestionsDiv.className = 'suggestions';
+      
+      suggestions.forEach(suggestion => {
+        const chip = document.createElement('div');
+        chip.className = 'suggestion-chip';
+        chip.textContent = suggestion;
+        chip.addEventListener('click', function() {
+          addUserMessage(this.textContent);
+          processMessage(this.textContent);
+        });
+        suggestionsDiv.appendChild(chip);
+      });
+      
+      chatBody.appendChild(suggestionsDiv);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+    
+    // Add demo conversation for specific scenario
+    document.addEventListener('keydown', function(e) {
+      // Press Alt+D to trigger demo conversation
+      if (e.altKey && e.key === 'd') {
+        runDemoConversation();
+      }
+    });
+    
+    function runDemoConversation() {
+      // Clear existing chat
+      while (chatBody.firstChild) {
+        chatBody.removeChild(chatBody.firstChild);
+      }
+      
+      const conversation = [
+        { role: 'bot', text: "Hello! I'm RetailMate, your personal FashionForward shopping assistant. How can I help you discover the perfect fashion items today?", delay: 0 },
+        { role: 'user', text: "I'm looking for a gift for my sister's birthday next week. She's into fashion but I don't know where to start.", delay: 1000 },
+        { role: 'bot', text: "I'd be happy to help you find the perfect birthday gift for your fashion-loving sister! To better assist you, could you share a few details about her style preferences and your budget?", delay: 1500 },
+        { role: 'user', text: "She's usually in business casual clothes for work, wears medium sizes, and likes minimalist jewelry. My budget is around $75.", delay: 2000 },
+        { role: 'bot', html: `Based on your sister's business casual style and preference for minimalist jewelry, here are some excellent gift options within your $75 budget:<br><br>
+                            <span class="product-name">Geometric Gold Bar Necklace</span> <span class="price">$58</span> - A sleek, versatile piece that works perfectly with business attire<br><br>
+                            <span class="product-name">Minimalist Leather Card Holder</span> <span class="price">$45</span> - Available in black, taupe, and navy<br><br>
+                            <span class="product-name">Silk Scarf</span> with subtle pattern <span class="price">$65</span> - Elevates any professional outfit<br><br>
+                            Would any of these match her style?`, delay: 2500 },
+        { role: 'user', text: "The necklace sounds perfect! Are there any matching earrings that would go with it?", delay: 3000 },
+        { role: 'bot', html: `Great choice! The Geometric Gold Bar Necklace is one of our bestsellers.<br><br>
+                            Yes, we have <span class="product-name">Geometric Gold Bar Studs</span> for <span class="price">$38</span> that pair perfectly with the necklace.<br><br>
+                            I should mention we currently have a buy-one-get-one 50% off promotion on all accessories! With this discount, the necklace ($58) and earrings ($38 at 50% off = $19) would total $77, just slightly over your budget.<br><br>
+                            Would you like to go with this matching set?`, delay: 3500 },
+        { role: 'user', text: "That sounds perfect! Do you gift wrap?", delay: 4000 },
+        { role: 'bot', html: `Absolutely! We offer the following gift wrap options:<br><br>
+                            • Complimentary basic gift wrap with tissue paper<br>
+                            • Premium gift box with ribbon for <span class="price">$5</span><br>
+                            • Deluxe gift presentation with personalized note for <span class="price">$12</span><br><br>
+                            Would you like to add any of these options to your purchase?`, delay: 4500 },
+        { role: 'user', text: "I'll take the deluxe option with a note saying 'Happy Birthday! Love, your brother'", delay: 5000 },
+        { role: 'bot', html: `Perfect! I've added the following to your selections:<br><br>
+                            • Geometric Gold Bar Necklace - <span class="price">$58.00</span><br>
+                            • Matching Gold Bar Studs - <span class="price">$19.00</span> (50% off)<br>
+                            • Deluxe Gift Presentation - <span class="price">$12.00</span><br>
+                            • Personal note: "Happy Birthday! Love, your brother"<br><br>
+                            Your total comes to <span class="price">$89.00</span> before tax. Would you like to proceed to checkout?`, delay: 5500 },
+        { role: 'user', text: "That's all, thank you for your help!", delay: 6000 },
+        { role: 'bot', text: "You're very welcome! I'm glad I could help you find the perfect birthday gift for your sister. The Geometric Gold Bar jewelry set with deluxe gift wrapping will make for a special presentation she'll love. Your order will be ready to ship within 1-2 business days, so it will arrive in time for her birthday. Thank you for shopping with FashionForward today! If you need anything else, I'm here to help.", delay: 6500 }
+      ];
+      
+      let currentIndex = 0;
+      
+      function playNextMessage() {
+        if (currentIndex < conversation.length) {
+          const message = conversation[currentIndex];
+          
+          if (message.role === 'user') {
+            addUserMessage(message.text);
+          } else {
+            if (message.html) {
+              addBotMessage(message.html);
+            } else {
+              addBotMessage(message.text);
+            }
+            
+            // Add suggestion chips after bot messages
+            if (currentIndex < conversation.length - 1) {
+              if (message.role === 'bot' && conversation[currentIndex + 1].role !== 'bot') {
+                if (currentIndex === 0) {
+                  addSuggestions(['Gift ideas', 'Women\'s fashion', 'Trending items']);
+                } else if (currentIndex === 2) {
+                  addSuggestions(['Under $50', '$50-$100', 'Jewelry']);
+                } else if (currentIndex === 4) {
+                  addSuggestions(['Show me the necklace', 'Other jewelry', 'More options']);
+                } else if (currentIndex === 6) {
+                  addSuggestions(['Gift wrap options', 'Add to cart', 'More info']);
+                }
+              }
+            }
+          }
+          currentIndex++;
+          setTimeout(playNextMessage, message.delay);
+        }
+      }
+      
+      playNextMessage();
+    }
+  </script>
+</body>
+</html>
