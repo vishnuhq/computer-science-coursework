@@ -1,0 +1,6 @@
+Email,Subject,Message
+user1@example.com,Hello,Test message 1
+user2@example.com,Greetings,Test message 2
+user3@example.com,Welcome,Test message 3
+user4@example.com,Subject,Sample message
+user5@example.com,Contact,Test message 5
