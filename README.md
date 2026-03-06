@@ -23,6 +23,7 @@ Courses I completed on Zero to Mastery Academy.
 
 - [Complete Python Developer](ztm-coursework/complete-python-developer/)
 - [Complete Web Developer](ztm-coursework/complete-web-developer/)
+- [Complete React Developer](ztm-coursework/complete-react-developer/)
 
 ### Udemy Coursework
 
